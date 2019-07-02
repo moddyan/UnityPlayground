@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public delegate float MathSurfaceFunction(float x, float z, float y);
+public delegate Vector3 MathSurfaceFunction(float u, float v, float t);
 
 public enum MathSurfaceFunctionName
 {
@@ -10,7 +10,8 @@ public enum MathSurfaceFunctionName
     Sine2D,
     MultiSine,
     MultiSine2D,
-    Ripple
+    Ripple,
+    Cylinder
 }
 
 public class MathSurface : MonoBehaviour
@@ -19,7 +20,7 @@ public class MathSurface : MonoBehaviour
 
     public Transform pointPrefab;
 
-    [Range(10,100)]
+    [Range(10, 100)]
     public int resolution = 10;
 
     public MathSurfaceFunctionName function;
@@ -30,7 +31,7 @@ public class MathSurface : MonoBehaviour
     static MathSurfaceFunction[] functions =
     {
         SineFunction, Sine2DFunction, MultiSineFunction, MultiSine2DFunction,
-        Ripple
+        Ripple, Cylinder
     };
 
     private void Awake()
@@ -38,20 +39,13 @@ public class MathSurface : MonoBehaviour
         points = new Transform[resolution * resolution];
         float step = 2f / resolution;
         Vector3 scale = Vector3.one * step;
-        Vector3 position = Vector3.zero;
-        for (int i = 0, z = 0; z < resolution; z++)
+        for (int i = 0; i < points.Length; i++)
         {
-            position.z = (z + 0.5f) * step - 1f;
-            for (int x = 0; x < resolution; x++, i++)
-            {
-                Transform point = Instantiate(pointPrefab);
-                points[i] = point;
+            Transform point = Instantiate(pointPrefab);
+            points[i] = point;
+            point.localScale = scale;
+            point.SetParent(transform, false);
 
-                position.x = (x + 0.5f) * step - 1f;
-                point.localPosition = position;
-                point.localScale = scale;
-                point.SetParent(transform, false);
-            }
         }
     }
 
@@ -66,50 +60,83 @@ public class MathSurface : MonoBehaviour
     {
         float t = Time.time;
         MathSurfaceFunction f = functions[(int)function];
-        for (int i = 0; i < points.Length; i++)
+
+        float step = 2f / resolution;
+        for (int i = 0, z = 0; z < resolution; z++)
         {
-            Transform point = points[i];
-            Vector3 position = point.localPosition;
-            position.y = f(position.x, position.z, t);
-            point.localPosition = position;
+            float v = (z + 0.5f) * step - 1f;
+            for (int x = 0; x < resolution; x++, i++)
+            {
+                float u = (x + 0.5f) * step - 1f;
+                points[i].localPosition = f(u, v, t);
+            }
         }
     }
 
-    static float SineFunction(float x, float z, float t)
+    static Vector3 SineFunction(float x, float z, float t)
     {
-        return Mathf.Sin(pi * (x + t));
+        Vector3 p;
+        p.x = x;
+        p.y = Mathf.Sin(pi * (x + t));
+        p.z = z;
+        return p;
     }
 
-    static float MultiSineFunction(float x, float z, float t)
+    static Vector3 MultiSineFunction(float x, float z, float t)
     {
         float y = Mathf.Sin(pi * (x + t));
-        y += Mathf.Sin(2f * pi * (x + 2*t)) / 2f;
+        y += Mathf.Sin(2f * pi * (x + 2 * t)) / 2f;
         y *= 2f / 3f;
-        return y;
+        Vector3 p;
+        p.x = x;
+        p.y = y;
+        p.z = z;
+        return p;
     }
 
-    static float Sine2DFunction(float x, float z, float t)
+    static Vector3 Sine2DFunction(float x, float z, float t)
     {
         float y = Mathf.Sin(pi * (x + t));
         y += Mathf.Sin(pi * (z + t));
         y *= 0.5f;
-        return y;
+        Vector3 p;
+        p.x = x;
+        p.y = y;
+        p.z = z;
+        return p;
     }
 
-    static float MultiSine2DFunction(float x, float z, float t)
+    static Vector3 MultiSine2DFunction(float x, float z, float t)
     {
         float y = 4f * Mathf.Sin(pi * (x + z + t * 0.5f));
         y += Mathf.Sin(pi * (x + t));
         y += Mathf.Sin(2f * pi * (z + 2f * t)) * 0.5f;
         y *= 1f / 5.5f;
-        return y;
+        Vector3 p;
+        p.x = x;
+        p.y = y;
+        p.z = z;
+        return p;
     }
 
-    static float Ripple(float x, float z, float t)
+    static Vector3 Ripple(float x, float z, float t)
     {
         float d = Mathf.Sqrt(x * x + z * z);
         float y = Mathf.Sin(pi * (4f * d - t));
         y /= 1f + 10f * d;
-        return y;
+        Vector3 p;
+        p.x = x;
+        p.y = y;
+        p.z = z;
+        return p;
+    }
+
+    static Vector3 Cylinder(float x, float z, float t)
+    {
+        Vector3 p;
+        p.x = 0f;
+        p.y = 0f;
+        p.z = 0f;
+        return p;
     }
 }
