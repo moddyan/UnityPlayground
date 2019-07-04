@@ -11,7 +11,9 @@ public enum MathSurfaceFunctionName
     MultiSine,
     MultiSine2D,
     Ripple,
-    Cylinder
+    Cylinder,
+    Sphere,
+    Torus
 }
 
 public class MathSurface : MonoBehaviour
@@ -23,7 +25,7 @@ public class MathSurface : MonoBehaviour
     [Range(10, 100)]
     public int resolution = 10;
 
-    public MathSurfaceFunctionName function;
+    public MathSurfaceFunctionName function = MathSurfaceFunctionName.Cylinder;
 
 
     Transform[] points;
@@ -31,7 +33,7 @@ public class MathSurface : MonoBehaviour
     static MathSurfaceFunction[] functions =
     {
         SineFunction, Sine2DFunction, MultiSineFunction, MultiSine2DFunction,
-        Ripple, Cylinder
+        Ripple, Cylinder, Sphere, Torus
     };
 
     private void Awake()
@@ -131,12 +133,40 @@ public class MathSurface : MonoBehaviour
         return p;
     }
 
-    static Vector3 Cylinder(float x, float z, float t)
+    static Vector3 Cylinder(float u, float v, float t)
     {
         Vector3 p;
-        p.x = 0f;
-        p.y = 0f;
-        p.z = 0f;
+        // float r = 1f + Mathf.Sin(6f * pi * u) * 0.2f;
+        // float r = 1f + Mathf.Sin(2f * pi * v) * 0.2f;
+        float r = 0.8f + Mathf.Sin(pi * (6f * u + 2f * v + t)) * 0.2f;
+
+        p.x = r * Mathf.Sin(pi * u);
+        p.y = v;
+        p.z = r * Mathf.Cos(pi * u);
         return p;
     }
+
+    static Vector3 Sphere(float u, float v, float t)
+    {
+        Vector3 p;
+
+	    float r = 0.8f + Mathf.Sin(pi * (6f * u + t)) * 0.1f;
+		r += Mathf.Sin(pi * (4f * v + t)) * 0.1f;
+
+		float s = Mathf.Cos(pi * 0.5f * v) * r;
+
+        p.x = s * Mathf.Sin(pi * u);
+        p.y = r * Mathf.Sin(pi * 0.5f * v);
+        p.z = s * Mathf.Cos(pi * u);
+        return p;
+    }
+
+    static Vector3 Torus (float u, float v, float t) {
+		Vector3 p;
+		float s = Mathf.Cos(pi * 0.5f * v);
+		p.x = s * Mathf.Sin(pi * u);
+		p.y = Mathf.Sin(pi * 0.5f * v);
+		p.z = s * Mathf.Cos(pi * u);
+		return p;
+	}
 }
