@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class Game : PersistableObject
 {
-    public PersistableObject prefab;
+    public ShapeFactory shapeFactory;
 
     public PersistentStorage storage;
 
-    List<PersistableObject> objects;
+    List<Shape> shapes;
 
     public KeyCode createKey = KeyCode.C;
     public KeyCode newGameKey = KeyCode.N;
@@ -18,7 +18,7 @@ public class Game : PersistableObject
 
     private void Awake()
     {
-        objects = new List<PersistableObject>();
+        shapes = new List<Shape>();
     }
 
 
@@ -52,31 +52,31 @@ public class Game : PersistableObject
 
     void BeginNewGame()
     {
-        for (int i = 0; i < objects.Count; i++)
+        for (int i = 0; i < shapes.Count; i++)
         {
-            Destroy(objects[i].gameObject);
+            Destroy(shapes[i].gameObject);
         }
-        objects.Clear();
+        shapes.Clear();
     }
 
 
     void CreateObject()
     {
-        PersistableObject c = Instantiate(prefab);
+        Shape c = shapeFactory.GetRandom();
         Transform t = c.transform;
         t.localPosition = Random.insideUnitSphere * 5f;
         t.localRotation = Random.rotation;
         t.localScale = Vector3.one * Random.Range(0.1f, 1f);
-        objects.Add(c);
+        shapes.Add(c);
     }
 
     public override void Save(GameDataWriter writer)
     {
-        writer.Write(objects.Count);
-        for (int i = 0; i < objects.Count; i++)
-        {
-            objects[i].Save(writer);
-        }
+        //writer.Write(objects.Count);
+        //for (int i = 0; i < objects.Count; i++)
+        //{
+        //    objects[i].Save(writer);
+        //}
     }
 
     public override void Load(GameDataReader reader)
@@ -84,9 +84,9 @@ public class Game : PersistableObject
         int count = reader.ReadInt();
         for (int i = 0; i < count; i++)
         {
-            PersistableObject o = Instantiate(prefab);
+            Shape o = shapeFactory.Get(0);
             o.Load(reader);
-            objects.Add(o);
+            shapes.Add(o);
         }
     }
 }
