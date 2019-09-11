@@ -382,6 +382,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shapeFactory: {fileID: 11400000, guid: 80879ef32626e00428011980022063cb, type: 2}
+  spawnZone: {fileID: 0}
   storage: {fileID: 2010869623}
   createKey: 99
   destroyKey: 120

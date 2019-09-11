@@ -12,24 +12,28 @@ public class Game : PersistableObject
     float creationProgress, destructionProgress;
     int loadedLevelBuildIndex;
 
-    public ShapeFactory shapeFactory;
+    [SerializeField]
+    ShapeFactory shapeFactory;
+    [SerializeField]
+    SpawnZone SpawnZoneOfLevel { get; set; }
 
-    public PersistentStorage storage;
-    public KeyCode createKey = KeyCode.C;
-    public KeyCode destroyKey = KeyCode.X;
-    public KeyCode newGameKey = KeyCode.N;
-    public KeyCode saveKey = KeyCode.S;
-    public KeyCode loadKey = KeyCode.L;
+    [SerializeField] PersistentStorage storage;
+    [SerializeField] KeyCode createKey = KeyCode.C;
+    [SerializeField] KeyCode destroyKey = KeyCode.X;
+    [SerializeField] KeyCode newGameKey = KeyCode.N;
+    [SerializeField] KeyCode saveKey = KeyCode.S;
+    [SerializeField] KeyCode loadKey = KeyCode.L;
 
     public int levelCount;
 
     public float CreationSpeed { get; set; }
     public float DestructionSpeed { get; set; }
 
+    public static Game Instance { get; private set; }
 
-    private void Awake()
+    private void OnEnable()
     {
-
+        Instance = this;
     }
 
 
@@ -118,7 +122,7 @@ public class Game : PersistableObject
     {
         Shape c = shapeFactory.GetRandom();
         Transform t = c.transform;
-        t.localPosition = Random.insideUnitSphere * 5f;
+        t.localPosition = SpawnZoneOfLevel.SpawnPoint;
         t.localRotation = Random.rotation;
         t.localScale = Vector3.one * Random.Range(0.1f, 1f);
         c.SetColor(Random.ColorHSV(
