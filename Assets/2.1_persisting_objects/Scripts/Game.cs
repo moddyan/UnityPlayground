@@ -15,7 +15,7 @@ public class Game : PersistableObject
     [SerializeField]
     ShapeFactory shapeFactory;
     [SerializeField]
-    SpawnZone SpawnZoneOfLevel { get; set; }
+    public SpawnZone SpawnZoneOfLevel { get; set; }
 
     [SerializeField] PersistentStorage storage;
     [SerializeField] KeyCode createKey = KeyCode.C;
