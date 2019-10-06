@@ -383,6 +383,8 @@ MonoBehaviour:
   newGameKey: 110
   saveKey: 115
   loadKey: 108
+  creationSpeedSlider: {fileID: 1273387427}
+  destructionSpeedSlider: {fileID: 1135205020}
   levelCount: 4
 --- !u!4 &1118432428
 Transform:

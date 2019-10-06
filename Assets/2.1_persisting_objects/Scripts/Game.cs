@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Game : PersistableObject
 {
@@ -23,6 +24,9 @@ public class Game : PersistableObject
     [SerializeField] KeyCode newGameKey = KeyCode.N;
     [SerializeField] KeyCode saveKey = KeyCode.S;
     [SerializeField] KeyCode loadKey = KeyCode.L;
+
+    [SerializeField] Slider creationSpeedSlider;
+    [SerializeField] Slider destructionSpeedSlider;
 
     public int levelCount;
 
@@ -152,6 +156,10 @@ public class Game : PersistableObject
     {
         writer.Write(shapes.Count);
         writer.Write(Random.state);
+        writer.Write(CreationSpeed);
+        writer.Write(creationProgress);
+        writer.Write(DestructionSpeed);
+        writer.Write(destructionProgress);
         writer.Write(loadedLevelBuildIndex);
         GameLevel.Current.Save(writer);
         for (int i = 0; i < shapes.Count; i++)
@@ -184,6 +192,11 @@ public class Game : PersistableObject
             {
                 Random.state = state;
             }
+
+            creationSpeedSlider.value = CreationSpeed = reader.ReadFloat();
+            creationProgress = reader.ReadFloat();
+            destructionSpeedSlider.value = DestructionSpeed = reader.ReadFloat();
+            destructionProgress = reader.ReadFloat();
         }
         yield return LoadLevel(version < 2 ? 1 : reader.ReadInt());
         if (version >= 3)

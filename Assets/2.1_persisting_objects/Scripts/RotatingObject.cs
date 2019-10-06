@@ -7,7 +7,7 @@ public class RotatingObject : PersistableObject
     [SerializeField]
     Vector3 angularVelocity;
 
-    void Update()
+    void FixedUpdate()
     {
         transform.Rotate(angularVelocity * Time.deltaTime);
     }
