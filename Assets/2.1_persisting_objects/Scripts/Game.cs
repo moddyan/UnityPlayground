@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class Game : PersistableObject
 {
-    const int saveVersion = 3;
+    const int saveVersion = 4;
     
     List<Shape> shapes;
     float creationProgress, destructionProgress;
@@ -108,6 +108,14 @@ public class Game : PersistableObject
         }
     }
 
+    void FixedUpdate()
+    {
+        for (int i = 0; i < shapes.Count; i++)
+        {
+            shapes[i].GameUpdate();
+        }
+	}
+
     void BeginNewGame()
     {
         Random.state = mainRandomState;
@@ -126,16 +134,7 @@ public class Game : PersistableObject
     void CreateShape()
     {
         Shape c = shapeFactory.GetRandom();
-        Transform t = c.transform;
-        t.localPosition = GameLevel.Current.SpawnPoint;
-        t.localRotation = Random.rotation;
-        t.localScale = Vector3.one * Random.Range(0.1f, 1f);
-        c.SetColor(Random.ColorHSV(
-            hueMin: 0f, hueMax: 1f,
-            saturationMin: 0.5f, saturationMax: 1f,
-            valueMin: 0.25f, valueMax: 1f,
-            alphaMin: 1f, alphaMax: 1f
-        ));
+        GameLevel.Current.ConfigureSpawn(c);
         shapes.Add(c);
     }
 

@@ -10,13 +10,6 @@ public class GameLevel : PersistableObject
     [SerializeField]
     PersistableObject[] persistentObjects;
 
-    public Vector3 SpawnPoint
-    {
-        get
-        {
-            return spawnZone.SpawnPoint;
-        }
-    }
 
     public static GameLevel Current { get; private set; }
 
@@ -27,6 +20,11 @@ public class GameLevel : PersistableObject
         {
             persistentObjects = new PersistableObject[0];
         }
+    }
+
+    public void ConfigureSpawn(Shape shape)
+    {
+        spawnZone.ConfigureSpawn(shape);
     }
 
     public override void Save(GameDataWriter writer)
