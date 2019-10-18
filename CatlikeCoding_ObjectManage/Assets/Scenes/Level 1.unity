@@ -151,6 +151,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnZone: {fileID: 1684610764}
+  persistentObjects: []
 --- !u!4 &1504828533
 Transform:
   m_ObjectHideFlags: 0
@@ -285,6 +286,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f7290492f210e14594fabffd5bec386, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnConfig:
+    movementDirection: 0
+    speed:
+      min: 2
+      max: 3
+    angularSpeed:
+      min: 0
+      max: 0
+    scale:
+      min: 0
+      max: 0
+    color:
+      hue:
+        min: 0.25287357
+        max: 0.83103454
+      saturation:
+        min: 0
+        max: 0
+      value:
+        min: 0
+        max: 0
   surfaceOnly: 0
 --- !u!4 &1684610765
 Transform:
@@ -295,7 +317,7 @@ Transform:
   m_GameObject: {fileID: 1684610763}
   m_LocalRotation: {x: 0, y: 0.38268343, z: 0, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 5, y: 2, z: 10}
+  m_LocalScale: {x: 5, y: 4, z: 8}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
