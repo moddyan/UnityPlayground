@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class Game : PersistableObject
 {
-    const int saveVersion = 4;
+    const int saveVersion = 5;
     
     List<Shape> shapes;
     float creationProgress, destructionProgress;
@@ -133,9 +133,7 @@ public class Game : PersistableObject
 
     void CreateShape()
     {
-        Shape c = shapeFactory.GetRandom();
-        GameLevel.Current.ConfigureSpawn(c);
-        shapes.Add(c);
+        shapes.Add(GameLevel.Current.SpawnShape());
     }
 
     void DestroyShape()

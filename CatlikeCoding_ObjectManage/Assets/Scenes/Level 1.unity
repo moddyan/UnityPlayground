@@ -287,26 +287,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnConfig:
+    factories:
+    - {fileID: 11400000, guid: 269f6feb2b706fb4faaa9a2f134ba1bd, type: 2}
+    - {fileID: 11400000, guid: 80879ef32626e00428011980022063cb, type: 2}
     movementDirection: 0
     speed:
-      min: 2
-      max: 3
+      min: 1
+      max: 2
     angularSpeed:
-      min: 0
-      max: 0
+      min: 3
+      max: 5
     scale:
-      min: 0
-      max: 0
+      min: 0.5
+      max: 1.5
     color:
       hue:
         min: 0.25287357
         max: 0.83103454
       saturation:
-        min: 0
-        max: 0
+        min: 0.27826086
+        max: 0.6434783
       value:
-        min: 0
-        max: 0
+        min: 0.3652174
+        max: 0.7304348
+    uniformColor: 0
   surfaceOnly: 0
 --- !u!4 &1684610765
 Transform:
