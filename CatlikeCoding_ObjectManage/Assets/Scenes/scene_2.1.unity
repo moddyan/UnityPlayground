@@ -375,7 +375,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d131bfbd364e11f4f83c53763fc3718f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shapeFactory: {fileID: 11400000, guid: 80879ef32626e00428011980022063cb, type: 2}
   reseedOnLoad: 0
   storage: {fileID: 2010869623}
   createKey: 99
@@ -385,6 +384,9 @@ MonoBehaviour:
   loadKey: 108
   creationSpeedSlider: {fileID: 1273387427}
   destructionSpeedSlider: {fileID: 1135205020}
+  shapeFactories:
+  - {fileID: 11400000, guid: 269f6feb2b706fb4faaa9a2f134ba1bd, type: 2}
+  - {fileID: 11400000, guid: 80879ef32626e00428011980022063cb, type: 2}
   levelCount: 4
 --- !u!4 &1118432428
 Transform:
