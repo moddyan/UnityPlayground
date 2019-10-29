@@ -292,8 +292,8 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 80879ef32626e00428011980022063cb, type: 2}
     movementDirection: 0
     speed:
-      min: 1
-      max: 2
+      min: 0
+      max: 0
     angularSpeed:
       min: 3
       max: 5
@@ -311,6 +311,13 @@ MonoBehaviour:
         min: 0.3652174
         max: 0.7304348
     uniformColor: 0
+    oscillationDirection: 2
+    oscillationAmplitude:
+      min: 0.1
+      max: 1
+    oscillationFrequency:
+      min: 1
+      max: 1
   surfaceOnly: 0
 --- !u!4 &1684610765
 Transform:

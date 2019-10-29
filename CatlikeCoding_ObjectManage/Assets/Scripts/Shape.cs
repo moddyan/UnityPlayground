@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class Shape : PersistableObject
 {
@@ -14,6 +15,9 @@ public class Shape : PersistableObject
 
     [SerializeField]
     MeshRenderer[] meshRenderers;
+
+    List<ShapeBehavior> behaviorList = new List<ShapeBehavior>();
+    public float Age { get; private set; }
 
     public int ShapeId
     {
@@ -67,9 +71,21 @@ public class Shape : PersistableObject
 
     public void GameUpdate()
     {
-        transform.Rotate(AngularVelocity * Time.deltaTime);
-        transform.localPosition += Velocity * Time.deltaTime;
+        Age += Time.deltaTime;
+        for (int i = 0; i < behaviorList.Count; i++)
+        {
+            behaviorList[i].GameUpdate(this);
+        }
     }
+
+    public T AddBehavior<T> () where T : ShapeBehavior, new()
+    {
+        T behavior = ShapeBehaviorPool<T>.Get();
+        behaviorList.Add(behavior);
+        return behavior;
+    }
+
+
 
     public void SetMaterial(Material material, int materialId)
     {
@@ -159,6 +175,12 @@ public class Shape : PersistableObject
 
     public void Recycle()
     {
+        Age = 0f;
+        for (int i = 0; i < behaviorList.Count; i++)
+        {
+            behaviorList[i].Recycle();
+        }
+        behaviorList.Clear();
         OriginFactory.Reclaim(this);
     }
 }
