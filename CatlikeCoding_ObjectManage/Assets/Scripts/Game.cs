@@ -31,9 +31,11 @@ public class Game : PersistableObject
 
     public float CreationSpeed { get; set; }
     public float DestructionSpeed { get; set; }
+    public static Game Instance { get; private set; }
 
     void OnEnable()
     {
+        Instance = this;
         if (shapeFactories[0].FactoryId != 0)
         {
             for (int i = 0; i < shapeFactories.Length; i++)
@@ -70,7 +72,7 @@ public class Game : PersistableObject
     {
         if (Input.GetKeyDown(createKey))
         {
-            CreateShape();
+            GameLevel.Current.SpawnShapes();
         }
         else if (Input.GetKeyDown(destroyKey))
         {
@@ -106,8 +108,8 @@ public class Game : PersistableObject
         creationProgress += Time.deltaTime * CreationSpeed;
         while (creationProgress >= 1f) {
 			creationProgress -= 1f;
-			CreateShape();
-		}
+            GameLevel.Current.SpawnShapes();
+        }
 
         destructionProgress += Time.deltaTime * DestructionSpeed;
         while (destructionProgress >= 1f)
@@ -139,12 +141,6 @@ public class Game : PersistableObject
         shapes.Clear();
     }
 
-
-    void CreateShape()
-    {
-        shapes.Add(GameLevel.Current.SpawnShape());
-    }
-
     void DestroyShape()
     {
         if (shapes.Count > 0)
@@ -157,7 +153,10 @@ public class Game : PersistableObject
             shapes.RemoveAt(lastIndex);
         }
     }
-
+    public void AddShape(Shape shape)
+    {
+        shapes.Add(shape);
+    }
     public override void Save(GameDataWriter writer)
     {
         writer.Write(shapes.Count);
@@ -217,7 +216,6 @@ public class Game : PersistableObject
             int materialId = version > 0 ? reader.ReadInt() : 0;
             Shape instance = shapeFactories[factoryId].Get(shapeId, materialId);
             instance.Load(reader);
-            shapes.Add(instance);
         }
     }
 

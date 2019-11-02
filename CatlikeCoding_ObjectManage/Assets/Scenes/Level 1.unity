@@ -290,10 +290,10 @@ MonoBehaviour:
     factories:
     - {fileID: 11400000, guid: 269f6feb2b706fb4faaa9a2f134ba1bd, type: 2}
     - {fileID: 11400000, guid: 80879ef32626e00428011980022063cb, type: 2}
-    movementDirection: 0
+    movementDirection: 2
     speed:
-      min: 0
-      max: 0
+      min: 2
+      max: 3
     angularSpeed:
       min: 3
       max: 5
@@ -313,11 +313,11 @@ MonoBehaviour:
     uniformColor: 0
     oscillationDirection: 2
     oscillationAmplitude:
-      min: 0.1
-      max: 1
+      min: 0
+      max: 0
     oscillationFrequency:
-      min: 1
-      max: 1
+      min: 0
+      max: 0
   surfaceOnly: 0
 --- !u!4 &1684610765
 Transform:
