@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\moddy\.Rider2019.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\moddy\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_CatlikeCoding_Rendering.969935222.00" t="ExcludeRecursive" />
+    <e p="D:\Work\CatlikeCoding\CatlikeCoding_Rendering" t="IncludeRecursive">
+      <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
+      <e p="Assets" t="Include">
+        <e p="part-1" t="Include">
+          <e p="Scripts" t="Include">
+            <e p="CameraTransformation.cs" t="Include" />
+            <e p="PositionTransformation.cs" t="Include" />
+            <e p="RotationTransformation.cs" t="Include" />
+            <e p="ScaleTransformation.cs" t="Include" />
+            <e p="Transformation.cs" t="Include" />
+            <e p="TransformationGrid.cs" t="Include" />
+          </e>
+        </e>
+        <e p="part-2" t="Include">
+          <e p="FIrstShader.shader" t="Include" />
+        </e>
+        <e p="part-3" t="Include">
+          <e p="Textured With Detail.shader" t="Include" />
+        </e>
+      </e>
+      <e p="CatlikeCoding_Rendering.sln" t="IncludeFlat" />
+      <e p="obj" t="ExcludeRecursive" />
+      <e p="Packages" t="ExcludeRecursive" />
+      <e p="Temp\bin" t="ExcludeRecursive" />
+    </e>
+  </component>
+</project>
