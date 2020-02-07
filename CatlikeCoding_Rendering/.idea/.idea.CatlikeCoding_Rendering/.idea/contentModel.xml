@@ -20,6 +20,7 @@
           <e p="FIrstShader.shader" t="Include" />
         </e>
         <e p="part-3" t="Include">
+          <e p="Texture Splatting.shader" t="Include" />
           <e p="Textured With Detail.shader" t="Include" />
         </e>
       </e>
