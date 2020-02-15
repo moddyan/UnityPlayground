@@ -23,6 +23,9 @@
           <e p="Texture Splatting.shader" t="Include" />
           <e p="Textured With Detail.shader" t="Include" />
         </e>
+        <e p="part-4" t="Include">
+          <e p="first lighting shader.shader" t="Include" />
+        </e>
       </e>
       <e p="CatlikeCoding_Rendering.sln" t="IncludeFlat" />
       <e p="obj" t="ExcludeRecursive" />
