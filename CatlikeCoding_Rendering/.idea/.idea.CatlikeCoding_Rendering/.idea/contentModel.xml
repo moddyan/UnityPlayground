@@ -26,6 +26,10 @@
         <e p="part-4" t="Include">
           <e p="first lighting shader.shader" t="Include" />
         </e>
+        <e p="part-5" t="Include">
+          <e p="multi light.shader" t="Include" />
+          <e p="part5.cginc" t="Include" />
+        </e>
       </e>
       <e p="CatlikeCoding_Rendering.sln" t="IncludeFlat" />
       <e p="obj" t="ExcludeRecursive" />
