@@ -18,8 +18,12 @@ Shader "Custom/part 5 - multi light shader"
             CGPROGRAM
             #pragma target 3.0
             
+            #pragma multi_compile _ VERTEXLIGHT_ON
+            
             #pragma vertex MyVertexProgram
             #pragma fragment MyFragmentProgram
+
+            #define FORWARD_BASE_PASS 
 
             #include "part5.cginc"
 
@@ -39,11 +43,12 @@ Shader "Custom/part 5 - multi light shader"
 
 			#pragma target 3.0
 
+            //#pragma multi_compile DIRECTIONAL DIRECTIONAL_COOKIE POINT SPOT
+			#pragma multi_compile_fwdadd
+                        
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
 			
-            #define POINT
-
             #include "part5.cginc"
 
 			ENDCG

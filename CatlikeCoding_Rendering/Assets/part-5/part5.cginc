@@ -23,7 +23,23 @@ struct Interpolators {
     float2 uv : TEXCOORD0;
     float3 normal : TEXCOORD1;
     float3 worldPos: TEXCOORD2;
+    
+#ifdef VERTEXLIGHT_ON
+    float3 vertexLightColor : TEXCOORD3;
+#endif
+    
 };
+
+void ComputeVertexLightColor (inout Interpolators i) {
+#ifdef VERTEXLIGHT_ON
+    i.vertexLightColor = Shade4PointLights(
+        unity_4LightPosX0, unity_4LightPosY0, unity_4LightPosZ0,
+        unity_LightColor[0].rgb, unity_LightColor[1].rgb,
+        unity_LightColor[2].rgb, unity_LightColor[3].rgb,
+        unity_4LightAtten0, i.worldPos, i.normal
+    );
+#endif
+}
 
 Interpolators MyVertexProgram (VertexData v) {
     Interpolators i;
@@ -31,17 +47,37 @@ Interpolators MyVertexProgram (VertexData v) {
     i.position = UnityObjectToClipPos(v.position);
     i.normal = UnityObjectToWorldNormal(v.normal);
     i.worldPos = mul(unity_ObjectToWorld, v.position);
+    ComputeVertexLightColor(i);
     return i;
 }
 
 UnityLight CreateLight (Interpolators i) {
 	UnityLight light;
-	//light.dir = _WorldSpaceLightPos0.xyz;
+#if defined(POINT) || defined(POINT_COOKIE) || defined(SPOT)
 	light.dir = normalize(_WorldSpaceLightPos0.xyz - i.worldPos);
+#else
+	light.dir = _WorldSpaceLightPos0.xyz;
+#endif
 	UNITY_LIGHT_ATTENUATION(attenuation, 0, i.worldPos);
 	light.color = _LightColor0.rgb * attenuation;
 	light.ndotl = DotClamped(i.normal, light.dir);
 	return light;
+}
+
+UnityIndirect CreateIndirectLight (Interpolators i) {
+	UnityIndirect indirectLight;
+	indirectLight.diffuse = 0;
+	indirectLight.specular = 0;
+
+	#if defined(VERTEXLIGHT_ON)
+		indirectLight.diffuse = i.vertexLightColor;
+	#endif
+	
+	#ifdef FORWARD_BASE_PASS
+        indirectLight.diffuse += max(0, ShadeSH9(float4(i.normal, 1)));
+	#endif
+	
+	return indirectLight;
 }
 
 // part 5, pbs
@@ -58,16 +94,12 @@ float4 MyFragmentProgram (Interpolators i): SV_TARGET {
     albedo = DiffuseAndSpecularFromMetallic(
         albedo, _Metallic, specularTint, oneMinusReflectivity
     );
-       
-    UnityIndirect indirectLight;
-    indirectLight.diffuse = 0;
-    indirectLight.specular = 0;
-    
+             
     return UNITY_BRDF_PBS(
         albedo, specularTint,
         oneMinusReflectivity, _Smoothness,
         i.normal, viewDir,
-        CreateLight(i), indirectLight
+        CreateLight(i), CreateIndirectLight(i)
     );
            
 }
