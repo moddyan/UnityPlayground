@@ -30,6 +30,11 @@
           <e p="multi light.shader" t="Include" />
           <e p="part5.cginc" t="Include" />
         </e>
+        <e p="part-6" t="Include">
+          <e p="bumps.shader" t="Include" />
+          <e p="part6.cginc" t="Include" />
+          <e p="TangentSpaceVisualizer.cs" t="Include" />
+        </e>
       </e>
       <e p="CatlikeCoding_Rendering.sln" t="IncludeFlat" />
       <e p="obj" t="ExcludeRecursive" />
