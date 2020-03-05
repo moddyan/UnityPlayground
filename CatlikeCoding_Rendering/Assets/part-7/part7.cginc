@@ -1,5 +1,5 @@
-﻿#ifndef PART_6_INCLUDE
-#define PART_6_INCLUDE
+﻿#ifndef PART_7_INCLUDE
+#define PART_7_INCLUDE
 
 #include "AutoLight.cginc"
 #include "UnityPBSLighting.cginc"
@@ -27,7 +27,7 @@ struct Interpolators {
     float4 position : SV_POSITION;
     float4 uv : TEXCOORD0;
     float3 normal : TEXCOORD1;
-    float4 tangent: TEXCOORD2;    
+    float4 tangent : TEXCOORD2;    
     float3 worldPos: TEXCOORD3;
     
 #ifdef VERTEXLIGHT_ON
@@ -45,6 +45,11 @@ void ComputeVertexLightColor (inout Interpolators i) {
         unity_4LightAtten0, i.worldPos, i.normal
     );
 #endif
+}
+
+float3 CreateBinormal (float3 normal, float3 tangent, float binormalSign) {
+	return cross(normal, tangent.xyz) *
+		(binormalSign * unity_WorldTransformParams.w);
 }
 
 Interpolators MyVertexProgram (VertexData v) {
@@ -89,28 +94,11 @@ UnityIndirect CreateIndirectLight (Interpolators i) {
 }
 
 void InitializeFragmentNormal(inout Interpolators i) {
-	//float2 du = float2(_HeightMap_TexelSize.x * 0.5, 0);
-	//float u1 = tex2D(_HeightMap, i.uv - du);
-	//float u2 = tex2D(_HeightMap, i.uv + du);
-	
-	//float2 dv = float2(0, _HeightMap_TexelSize.y * 0.5);
-	//float v1 = tex2D(_HeightMap, i.uv - dv);
-	//float v2 = tex2D(_HeightMap, i.uv + dv);
-	
-	//i.normal = float3(u1 - u2, 1, v1 - v2);
 
-    //i.normal.xy = tex2D(_NormalMap, i.uv).wy * 2 -1;
-    //i.normal.xy *= _BumpScale;
-    //i.normal.z = sqrt(1 - saturate(dot(i.normal.xy, i.normal.xy)));
-    
     float3 mainNormal = UnpackScaleNormal(tex2D(_NormalMap, i.uv.xy), _BumpScale);
     float3 detailNormal = UnpackScaleNormal(tex2D(_DetailNormalMap, i.uv.zw), _DetailBumpScale);
     
-    //i.normal = float3(mainNormal.xy / mainNormal.z + detailNormal.xy / detailNormal.z, 1);
-    //whiteout bending
-    //i.normal = float3(mainNormal.xy + detailNormal.xy, mainNormal.z * detailNormal.z);
     float3 tangentSpaceNormal = BlendNormals(mainNormal, detailNormal);
-    //tangentSpaceNormal = tangentSpaceNormal.xzy;
     
     float3 binormal = cross(i.normal, i.tangent.xyz) * (i.tangent.w * unity_WorldTransformParams.w);
     
@@ -119,7 +107,6 @@ void InitializeFragmentNormal(inout Interpolators i) {
 		tangentSpaceNormal.y * binormal +
 		tangentSpaceNormal.z * i.normal
 	);
-   
 }
 
 
