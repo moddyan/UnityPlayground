@@ -1,8 +1,8 @@
 ﻿#ifndef PART_7_INCLUDE
 #define PART_7_INCLUDE
 
-#include "AutoLight.cginc"
 #include "UnityPBSLighting.cginc"
+#include "AutoLight.cginc"
 
 float4 _Tint;
 sampler2D _MainTex, _DetailTex;
@@ -16,7 +16,7 @@ float _Smoothness;
 
 
 struct VertexData {
-    float4 position : POSITION;
+    float4 vertex : POSITION;
     float3 normal : NORMAL;
     float4 tangent: TANGENT;
     float2 uv : TEXCOORD0;
@@ -24,14 +24,16 @@ struct VertexData {
 
 
 struct Interpolators {
-    float4 position : SV_POSITION;
+    float4 pos : SV_POSITION;
     float4 uv : TEXCOORD0;
     float3 normal : TEXCOORD1;
     float4 tangent : TEXCOORD2;    
     float3 worldPos: TEXCOORD3;
     
+    SHADOW_COORDS(4)
+    
 #ifdef VERTEXLIGHT_ON
-    float3 vertexLightColor : TEXCOORD4;
+    float3 vertexLightColor : TEXCOORD5;
 #endif
     
 };
@@ -56,10 +58,13 @@ Interpolators MyVertexProgram (VertexData v) {
     Interpolators i;
     i.uv.xy = TRANSFORM_TEX(v.uv, _MainTex);
     i.uv.zw = TRANSFORM_TEX(v.uv, _DetailTex);
-    i.position = UnityObjectToClipPos(v.position);
+    i.pos = UnityObjectToClipPos(v.vertex);
+    i.worldPos = mul(unity_ObjectToWorld, v.vertex);
     i.normal = UnityObjectToWorldNormal(v.normal);
     i.tangent = float4(UnityObjectToWorldDir(v.tangent.xyz), v.tangent.w);
-    i.worldPos = mul(unity_ObjectToWorld, v.position);
+    
+    TRANSFER_SHADOW(i);
+
     ComputeVertexLightColor(i);
     return i;
 }
@@ -71,7 +76,10 @@ UnityLight CreateLight (Interpolators i) {
 #else
 	light.dir = _WorldSpaceLightPos0.xyz;
 #endif
-	UNITY_LIGHT_ATTENUATION(attenuation, 0, i.worldPos);
+
+
+	UNITY_LIGHT_ATTENUATION(attenuation, i, i.worldPos);
+
 	light.color = _LightColor0.rgb * attenuation;
 	light.ndotl = DotClamped(i.normal, light.dir);
 	return light;

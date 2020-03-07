@@ -36,6 +36,7 @@
           <e p="TangentSpaceVisualizer.cs" t="Include" />
         </e>
         <e p="part-7" t="Include">
+          <e p="myshadow.cginc" t="Include" />
           <e p="part7.cginc" t="Include" />
           <e p="shadow.shader" t="Include" />
         </e>

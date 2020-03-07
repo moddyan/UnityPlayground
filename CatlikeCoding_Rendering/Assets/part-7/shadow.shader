@@ -24,7 +24,8 @@ Shader "Custom/part 7 - shadow"
             #pragma target 3.0
             
             #pragma multi_compile _ VERTEXLIGHT_ON
-            
+            #pragma multi_compile _ SHADOWS_SCREEN
+             
             #pragma vertex MyVertexProgram
             #pragma fragment MyFragmentProgram
 
@@ -49,12 +50,29 @@ Shader "Custom/part 7 - shadow"
 			#pragma target 3.0
 
             //#pragma multi_compile DIRECTIONAL DIRECTIONAL_COOKIE POINT SPOT
-			#pragma multi_compile_fwdadd
+			#pragma multi_compile_fwdadd_fullshadows
                         
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
 			
             #include "part7.cginc"
+
+			ENDCG
+		}
+		
+		Pass {
+			Tags {
+				"LightMode" = "ShadowCaster"
+			}
+			
+			CGPROGRAM
+
+			#pragma target 3.0
+			                    
+			#pragma vertex MyShadowVertexProgram
+			#pragma fragment MyShadowFragmentProgram
+
+			#include "myshadow.cginc"
 
 			ENDCG
 		}
