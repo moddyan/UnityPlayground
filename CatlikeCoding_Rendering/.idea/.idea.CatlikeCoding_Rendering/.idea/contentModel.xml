@@ -40,6 +40,11 @@
           <e p="part7.cginc" t="Include" />
           <e p="shadow.shader" t="Include" />
         </e>
+        <e p="part-8" t="Include">
+          <e p="myshadow.cginc" t="Include" />
+          <e p="part8.cginc" t="Include" />
+          <e p="reflection.shader" t="Include" />
+        </e>
       </e>
       <e p="CatlikeCoding_Rendering.sln" t="IncludeFlat" />
       <e p="obj" t="ExcludeRecursive" />
