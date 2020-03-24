@@ -13,6 +13,9 @@ Shader "Custom/part 9 - complex material"
 		[Gamma] _Metallic ("Metallic", Range(0, 1)) = 0
 		_Smoothness ("Smoothness", Range(0, 1)) = 0.1
 		
+		[NoScaleOffset] _EmissionMap ("Emission", 2D) = "black" {}
+		_Emission ("Emission", Color) = (0, 0, 0)
+		
 		_DetailTex ("Detail Albedo", 2D) = "gray" {}
 		[NoScaleOffset] _DetailNormalMap ("Detail Normals", 2D) = "bump" {}
 		_DetailBumpScale ("Detail Bump Scale", Float) = 1
@@ -29,7 +32,8 @@ Shader "Custom/part 9 - complex material"
           
             #pragma shader_feature _METALLIC_MAP  
             #pragma shader_feature _ _SMOOTHNESS_ALBEDO _SMOOTHNESS_METALLIC
-
+	        #pragma shader_feature _EMISSION_MAP
+	
             #pragma multi_compile _ VERTEXLIGHT_ON
             #pragma multi_compile _ SHADOWS_SCREEN
              
@@ -58,7 +62,7 @@ Shader "Custom/part 9 - complex material"
 			
             #pragma shader_feature _ _METALLIC_MAP  
             #pragma shader_feature _ _SMOOTHNESS_ALBEDO _SMOOTHNESS_METALLIC
-            
+
             //#pragma multi_compile DIRECTIONAL DIRECTIONAL_COOKIE POINT SPOT
 			#pragma multi_compile_fwdadd_fullshadows
                         
