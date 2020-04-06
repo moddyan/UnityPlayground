@@ -25,6 +25,11 @@
           <e p="myshadow.cginc" t="Include" />
           <e p="part10.shader" t="Include" />
         </e>
+        <e p="part-11" t="Include">
+          <e p="mylighting.cginc" t="Include" />
+          <e p="myshadow.cginc" t="Include" />
+          <e p="part11.shader" t="Include" />
+        </e>
         <e p="part-2" t="Include">
           <e p="FIrstShader.shader" t="Include" />
         </e>
