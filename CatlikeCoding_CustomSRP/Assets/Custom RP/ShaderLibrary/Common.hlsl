@@ -8,7 +8,10 @@
 #define UNITY_MATRIX_P glstate_matrix_projection
 
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
+
 #include "UnityInput.hlsl"
+
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
 
 #endif
