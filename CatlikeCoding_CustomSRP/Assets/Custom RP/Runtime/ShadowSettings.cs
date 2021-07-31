@@ -38,7 +38,7 @@ public class ShadowSettings
     {
         atlasSize = TextureSize._1024,
         cascadeCount = 4,
-        cascadeRatio1 = 0.15f,
+        cascadeRatio1 = 0.1f,
         cascadeRatio2 = 0.25f,
         cascadeRatio3 = 0.5f
     };
