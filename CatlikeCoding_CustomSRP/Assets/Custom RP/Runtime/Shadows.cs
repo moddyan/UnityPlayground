@@ -109,7 +109,7 @@ public class Shadows
                 cullingSphere.w *= cullingSphere.w;  // 保存半径的平方值避免在比较的时候开方
                 cascadeCullingSpheres[i] = cullingSphere;
             }
-
+ 
             shadowSettings.splitData = splitData;
             int tileIndex = tileOffset + i;
             dirShadowMatrices[tileIndex] = ConvertToAtlasMatrix(
@@ -153,6 +153,36 @@ public class Shadows
         m.m23 = 0.5f * (m.m23 + m.m33);
         return m;
     }
+    
+    // 另一个更好理解的计算过程 https://github.com/wlgys8/SRPLearn/wiki/MainLightShadow
+    // /// <summary>
+    // /// 通过ComputeDirectionalShadowMatricesAndCullingPrimitives得到的投影矩阵，其对应的x,y,z范围分别为均为(-1,1).
+    // /// 因此我们需要构造坐标变换矩阵，可以将世界坐标转换到ShadowMap齐次坐标空间。对应的xy范围为(0,1),z范围为(1,0)
+    // /// </summary>
+    // static Matrix4x4 GetWorldToShadowMapSpaceMatrix(Matrix4x4 proj, Matrix4x4 view)
+    // {
+    //     //检查平台是否zBuffer反转,一般情况下，z轴方向是朝屏幕内，即近小远大。但是在zBuffer反转的情况下，z轴是朝屏幕外，即近大远小。
+    //     if (SystemInfo.usesReversedZBuffer)
+    //     {
+    //         proj.m20 = -proj.m20;
+    //         proj.m21 = -proj.m21;
+    //         proj.m22 = -proj.m22;
+    //         proj.m23 = -proj.m23;
+    //     }
+    //
+    //     // uv_depth = xyz * 0.5 + 0.5. 
+    //     // 即将xy从(-1,1)映射到(0,1),z从(-1,1)或(1,-1)映射到(0,1)或(1,0)
+    //     Matrix4x4 worldToShadow = proj * view;
+    //     var textureScaleAndBias = Matrix4x4.identity;
+    //     textureScaleAndBias.m00 = 0.5f;
+    //     textureScaleAndBias.m11 = 0.5f;
+    //     textureScaleAndBias.m22 = 0.5f;
+    //     textureScaleAndBias.m03 = 0.5f;
+    //     textureScaleAndBias.m23 = 0.5f;
+    //     textureScaleAndBias.m13 = 0.5f;
+    //
+    //     return textureScaleAndBias * worldToShadow;
+    // }
 
     void ExecuteBuffer()
     {
