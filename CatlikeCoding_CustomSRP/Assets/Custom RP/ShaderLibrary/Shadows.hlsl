@@ -13,7 +13,7 @@ CBUFFER_START(_CustomShadows)
 int _CascadeCount;
 float4 _CascadeCullingSpheres[MAX_CASCADE_COUNT];
 float4x4 _DirectionalShadowMatrices[MAX_SHADOWED_DIRECTIONAL_LIGHT_COUNT * MAX_CASCADE_COUNT];
-float _ShadowDistance;
+float4 _ShadowDistanceFade;
 CBUFFER_END
 
 struct ShadowData
@@ -22,15 +22,25 @@ struct ShadowData
     float strength;
 };
 
+float FadedShadowStrength(float distance, float scale, float fade)
+{
+    return saturate((1.0 - distance * scale) * fade);
+}
+
 ShadowData GetShadowData (Surface surfaceWS)
 {
     ShadowData data;
-    data.strength = surfaceWS.depth < _ShadowDistance ? 1.0 : 0.0;
+    data.strength = FadedShadowStrength(surfaceWS.depth, _ShadowDistanceFade.x, _ShadowDistanceFade.y);
     int i;
     for (i = 0; i < _CascadeCount; i++) {
         float4 sphere = _CascadeCullingSpheres[i];
         float distanceSqr = DistanceSquared(surfaceWS.position, sphere.xyz);
         if (distanceSqr < sphere.w) {
+            if (i == _CascadeCount - 1) {
+                data.strength *= FadedShadowStrength(
+                    distanceSqr, 1.0 / sphere.w, _ShadowDistanceFade.z
+                );
+            }
             break;
         }
     }
