@@ -19,11 +19,12 @@ public class Shadows
         dirShadowMatricesId = Shader.PropertyToID("_DirectionalShadowMatrices"),
         cascadeCountId = Shader.PropertyToID("_CascadeCount"),
         cascadeCullingSpheresId = Shader.PropertyToID("_CascadeCullingSpheres"),
+        cascadeDataId = Shader.PropertyToID("_CascadeData"),
         shadowDistanceFadeId = Shader.PropertyToID("_ShadowDistanceFade");
 
     private static Vector4[] cascadeCullingSpheres = new Vector4[maxCascades];
+    private static Vector4[] cascadeData = new Vector4[maxCascades];
     private static Matrix4x4[] dirShadowMatrices = new Matrix4x4[maxShadowedDirectionalLightCount * maxCascades];
-
 
     struct ShadowedDirectionalLight
     {
@@ -34,7 +35,6 @@ public class Shadows
         new ShadowedDirectionalLight[maxShadowedDirectionalLightCount];
 
     private int shadowedDirectionalLightCount;
-
 
     public void Setup(ScriptableRenderContext context, CullingResults cullingResults,
         ShadowSettings shadowSettings)
@@ -80,6 +80,7 @@ public class Shadows
 
         buffer.SetGlobalInt(cascadeCountId, settings.directional.cascadeCount);
         buffer.SetGlobalVectorArray(cascadeCullingSpheresId, cascadeCullingSpheres);
+        buffer.SetGlobalVectorArray(cascadeDataId, cascadeData);
         buffer.SetGlobalMatrixArray(dirShadowMatricesId, dirShadowMatrices);
         float f = 1f - settings.directional.cascadeFade;
         buffer.SetGlobalVector(shadowDistanceFadeId, new Vector4(
@@ -108,9 +109,7 @@ public class Shadows
                 out ShadowSplitData splitData);
             if (index == 0)  // TODO 这里感觉有问题，不同的light，culling sphere的位置应该是不一样的才对
             {
-                Vector4 cullingSphere = splitData.cullingSphere;
-                cullingSphere.w *= cullingSphere.w;  // 保存半径的平方值避免在比较的时候开方
-                cascadeCullingSpheres[i] = cullingSphere;
+                SetCascadeData(i, splitData.cullingSphere, tileSize);
             }
  
             shadowSettings.splitData = splitData;
@@ -119,9 +118,20 @@ public class Shadows
                 projectionMatrix * viewMatrix, SetTileViewport(tileIndex, split, tileSize), split
             );
             buffer.SetViewProjectionMatrices(viewMatrix, projectionMatrix);
+
+            // Slop Bias 可以解决问题，但是不够直觉，需要频繁测试来找到合适的值
+            // buffer.SetGlobalDepthBias(0f, 3f);
             ExecuteBuffer();
             context.DrawShadows(ref shadowSettings);
+            // buffer.SetGlobalDepthBias(0f, 0f);
         }
+    }
+
+    void SetCascadeData(int index, Vector4 cullingSphere, float tileSize)
+    {
+        cascadeData[index].x = 1f / cullingSphere.w;
+        cullingSphere.w *= cullingSphere.w;  // 保存半径的平方值避免在比较的时候开方
+        cascadeCullingSpheres[index] = cullingSphere;
     }
 
     Vector2 SetTileViewport(int index, int split, float tileSize)
