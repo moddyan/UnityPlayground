@@ -29,6 +29,7 @@ public class Shadows
     struct ShadowedDirectionalLight
     {
         public int visibleLightIndex;
+        public float slopeScaleBias;
     }
 
     private ShadowedDirectionalLight[] ShadowedDirectionalLights =
@@ -107,11 +108,11 @@ public class Shadows
                 tileSize, 0f,
                 out Matrix4x4 viewMatrix, out Matrix4x4 projectionMatrix,
                 out ShadowSplitData splitData);
-            if (index == 0)  // TODO 这里感觉有问题，不同的light，culling sphere的位置应该是不一样的才对
+            if (index == 0) // TODO 这里感觉有问题，不同的light，culling sphere的位置应该是不一样的才对
             {
                 SetCascadeData(i, splitData.cullingSphere, tileSize);
             }
- 
+
             shadowSettings.splitData = splitData;
             int tileIndex = tileOffset + i;
             dirShadowMatrices[tileIndex] = ConvertToAtlasMatrix(
@@ -120,18 +121,20 @@ public class Shadows
             buffer.SetViewProjectionMatrices(viewMatrix, projectionMatrix);
 
             // Slop Bias 可以解决问题，但是不够直觉，需要频繁测试来找到合适的值
-            // buffer.SetGlobalDepthBias(0f, 3f);
+            buffer.SetGlobalDepthBias(0f, light.slopeScaleBias);
             ExecuteBuffer();
             context.DrawShadows(ref shadowSettings);
-            // buffer.SetGlobalDepthBias(0f, 0f);
+            buffer.SetGlobalDepthBias(0f, 0f);
         }
     }
 
     void SetCascadeData(int index, Vector4 cullingSphere, float tileSize)
     {
-        cascadeData[index].x = 1f / cullingSphere.w;
-        cullingSphere.w *= cullingSphere.w;  // 保存半径的平方值避免在比较的时候开方
+        float texelSize = 2f * cullingSphere.w / tileSize;
+        cullingSphere.w *= cullingSphere.w; // 保存半径的平方值避免在比较的时候开方
         cascadeCullingSpheres[index] = cullingSphere;
+        cascadeData[index] = new Vector4(
+            1f / cullingSphere.w, texelSize * 1.4142136f);
     }
 
     Vector2 SetTileViewport(int index, int split, float tileSize)
@@ -166,7 +169,7 @@ public class Shadows
         m.m23 = 0.5f * (m.m23 + m.m33);
         return m;
     }
-    
+
     // 另一个更好理解的计算过程 https://github.com/wlgys8/SRPLearn/wiki/MainLightShadow
     // /// <summary>
     // /// 通过ComputeDirectionalShadowMatricesAndCullingPrimitives得到的投影矩阵，其对应的x,y,z范围分别为均为(-1,1).
@@ -203,7 +206,7 @@ public class Shadows
         buffer.Clear();
     }
 
-    public Vector2 ReserveDirectionalShadows(Light light, int visibleLightIndex)
+    public Vector3 ReserveDirectionalShadows(Light light, int visibleLightIndex)
     {
         if (shadowedDirectionalLightCount < maxShadowedDirectionalLightCount &&
             light.shadows != LightShadows.None && light.shadowStrength > 0 &&
@@ -213,13 +216,15 @@ public class Shadows
             ShadowedDirectionalLights[shadowedDirectionalLightCount] =
                 new ShadowedDirectionalLight
                 {
-                    visibleLightIndex = visibleLightIndex
+                    visibleLightIndex = visibleLightIndex,
+                    slopeScaleBias = light.shadowBias
                 };
-            return new Vector2(light.shadowStrength,
-                settings.directional.cascadeCount * shadowedDirectionalLightCount++);
+            return new Vector3(light.shadowStrength,
+                settings.directional.cascadeCount * shadowedDirectionalLightCount++,
+                light.shadowNormalBias);
         }
 
-        return Vector2.zero;
+        return Vector3.zero;
     }
 
     public void Cleanup()
