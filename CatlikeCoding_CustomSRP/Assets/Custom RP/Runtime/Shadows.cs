@@ -30,6 +30,7 @@ public class Shadows
     {
         public int visibleLightIndex;
         public float slopeScaleBias;
+        public float nearPlaneOffset;
     }
 
     private ShadowedDirectionalLight[] ShadowedDirectionalLights =
@@ -105,7 +106,7 @@ public class Shadows
         {
             cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(
                 light.visibleLightIndex, i, cascadeCount, ratios,
-                tileSize, 0f,
+                tileSize, light.nearPlaneOffset,
                 out Matrix4x4 viewMatrix, out Matrix4x4 projectionMatrix,
                 out ShadowSplitData splitData);
             if (index == 0) // TODO 这里感觉有问题，不同的light，culling sphere的位置应该是不一样的才对
@@ -217,7 +218,8 @@ public class Shadows
                 new ShadowedDirectionalLight
                 {
                     visibleLightIndex = visibleLightIndex,
-                    slopeScaleBias = light.shadowBias
+                    slopeScaleBias = light.shadowBias,
+                    nearPlaneOffset = light.shadowNearPlane,
                 };
             return new Vector3(light.shadowStrength,
                 settings.directional.cascadeCount * shadowedDirectionalLightCount++,
