@@ -54,3 +54,14 @@ Update Mode: updateDependencies
 The following packages were updated:
   com.unity.ide.rider from version 3.0.5 to 3.0.6
   com.unity.ide.visualstudio from version 2.0.7 to 2.0.8
+
+=== Tue Aug 23 23:19:45 2022
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.ide.rider from version 3.0.7 to 3.0.15
+  com.unity.ide.visualstudio from version 2.0.12 to 2.0.16
+  com.unity.ide.vscode from version 1.2.4 to 1.2.5
+  com.unity.render-pipelines.core from version 12.1.2 to 13.1.8
