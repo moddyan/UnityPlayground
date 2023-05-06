@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19cdff936998899429863dbb0ccba4c7, type: 3}
+  m_Name: Rendering Config
+  m_EditorClassIdentifier: 
+  ClearColor: {r: 0.30210927, g: 0.8773585, b: 0.65666205, a: 1}
+  AmbientColor: {r: 0, g: 0, b: 0, a: 1}
+  RasterizerType: 0
+  UseUnityNativeRenderer: 0
+  WireframeMode: 0
+  FrustumCulling: 1
+  BackfaceCulling: 1
+  DisplayBuffer: 0
+  MSAA: 0
+  BilinearSample: 1
+  FragmentShaderType: 1
+  VertexColors: []
+  ComputeShader: {fileID: 0}
