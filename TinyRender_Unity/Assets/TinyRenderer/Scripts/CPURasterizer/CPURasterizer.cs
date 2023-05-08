@@ -615,6 +615,9 @@ namespace TinyRenderer
             }
             else
             {
+                // 后注：这个msaa的做法完全不对。就留在这儿不删掉了
+                // 正确的做法应该是判断有几个子像素在三角形内，然后对正常frag shader的结果乘以相应的比例
+
                 int MSAALevel = (int)_config.MSAA;
                 float sampler_dis = 1.0f / MSAALevel;
                 float sampler_dis_half = sampler_dis * 0.5f;
@@ -659,6 +662,7 @@ namespace TinyRenderer
                                         Color color_p = (alpha * t.Vertex0.Color / v[0].w + beta * t.Vertex1.Color / v[1].w + gamma * t.Vertex2.Color / v[2].w) * z;
                                         samplers_color_MSAA[index] = color_p;
                                     }
+
                                 }
                             }
                         }
