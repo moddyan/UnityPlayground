@@ -20,6 +20,7 @@ namespace TinyRenderer
         IRasterizer _lastRasterizer;
 
         CPURasterizer _cpuRasterizer;
+        JobRasterizer _jobRasterizer;
 
         public RenderingConfig renderConfig;
         StatsPanel _statsPanel;
@@ -101,12 +102,14 @@ namespace TinyRenderer
             Debug.Log($"screen size: {w}x{h}");
 
             _cpuRasterizer = new CPURasterizer(w, h, renderConfig);
+            _jobRasterizer = new JobRasterizer(w, h, renderConfig);
             _lastRasterizer = null;
 
             _statsPanel = this.GetComponent<StatsPanel>();
             if (_statsPanel != null)
             {
                 _cpuRasterizer.onRasterizerStatUpdate += _statsPanel.StatDelegate;
+                _jobRasterizer.onRasterizerStatUpdate += _statsPanel.StatDelegate;
             }
 
         }
@@ -114,6 +117,7 @@ namespace TinyRenderer
         private void OnDestroy()
         {
             _cpuRasterizer.Release();
+            _jobRasterizer.Release();
         }
 
         /// <summary>
@@ -128,6 +132,7 @@ namespace TinyRenderer
                     _rasterizer = _cpuRasterizer;
                     break;
                 case RasterizerType.CPUJobs:
+                    _rasterizer = _jobRasterizer;
                     break;
                 case RasterizerType.GPUDriven:
                     break;

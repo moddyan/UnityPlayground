@@ -122,7 +122,7 @@ namespace TinyRenderer
 
             var lightDir = -mainLight.transform.forward;
             uniforms.WorldSpaceLightDir = lightDir;
-            uniforms.LightColor = mainLight.color;
+            uniforms.LightColor = mainLight.color * mainLight.intensity;
             uniforms.AmbientColor = _config.AmbientColor;
 
             //TransformTool.SetupViewProjectionMatrix(camera, Aspect, out _viewMatrix, out _projectionMatrix);
@@ -342,7 +342,6 @@ namespace TinyRenderer
                     for (int i = 0; i < depthBuffer.Length; i++)
                     {
                         // depth_buf中的值范围是[0,1]，且最近处为1，最远处为0。因此可视化后背景是黑色
-                        // 是这样吗？应该是下面的： TODO
                         float d = depthBuffer[i];
                         if (_config.DisplayBuffer == DisplayBufferType.DepthRed)
                         {

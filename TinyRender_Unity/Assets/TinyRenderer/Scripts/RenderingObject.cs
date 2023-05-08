@@ -16,6 +16,7 @@ namespace TinyRenderer
         public bool DoubleSideRendering;
 
         public CPURenderObjectData cpuData;
+        public JobRenderObjectData jobData;
 
         void Start()
         {
@@ -40,6 +41,7 @@ namespace TinyRenderer
             if(mesh != null)
             {
                 cpuData = new CPURenderObjectData(mesh);
+                jobData = new JobRenderObjectData(mesh);
             }
 
         }
@@ -47,6 +49,7 @@ namespace TinyRenderer
         private void OnDestroy()
         {
             cpuData.Release();
+            jobData.Release();
         }
 
         // TRS
