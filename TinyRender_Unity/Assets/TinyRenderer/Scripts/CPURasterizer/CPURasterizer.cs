@@ -58,29 +58,53 @@ namespace TinyRenderer
             texture.filterMode = FilterMode.Point;
 
             // MSAA Buffer
+            if (_config.MSAA != MSAALevel.Disabled && !_config.WireframeMode)
+            {
+                AllocateMSAABuffers();
+            }
 
         }
 
         void AllocateMSAABuffers()
         {
-            // TODO
+            int msaaLevel = (int)_config.MSAA;
+            int bufSize = _width * _height * msaaLevel * msaaLevel;
+            if (samplers_color_MSAA == null || samplers_color_MSAA.Length != bufSize)
+            {
+                samplers_color_MSAA = new Color[bufSize];
+                samplers_mask_MSAA = new bool[bufSize];
+                samplers_depth_MSAA = new float[bufSize];
+            }
         }
 
         public void Clear(BufferMask mask)
         {
             ProfilerManager.BeginSample("CPURasterizer.Clear");
-            // MSAA TODO
+            // MSAA
+            if (_config.MSAA != MSAALevel.Disabled && !_config.WireframeMode)
+            {
+                AllocateMSAABuffers();
+            }
 
             // Color Buffer
             if ((mask & BufferMask.Color) == BufferMask.Color)
             {
                 TinyRenderUtils.FillArray<Color>(frameBuffer, _config.ClearColor);
+                if (_config.MSAA != MSAALevel.Disabled && !_config.WireframeMode)
+                {
+                    TinyRenderUtils.FillArray(samplers_color_MSAA, _config.ClearColor);
+                    TinyRenderUtils.FillArray(samplers_mask_MSAA, false);
+                }
             }
 
             // Depth Buffer
             if ((mask & BufferMask.Depth) == BufferMask.Depth)
             {
                 TinyRenderUtils.FillArray<float>(depthBuffer, 0f);
+                if (_config.MSAA != MSAALevel.Disabled && !_config.WireframeMode)
+                {
+                    TinyRenderUtils.FillArray(samplers_depth_MSAA, 0f);
+                }
             }
 
             _trianglesAll = _trianglesRendered = 0;
@@ -264,12 +288,44 @@ namespace TinyRenderer
                 {
                     RasterizeTriangle(t, obj);
                 }
-
-                // Resolve AA
-
-                ProfilerManager.EndSample();
             }
 
+            ProfilerManager.EndSample();
+
+            // Resolve AA
+            if (_config.MSAA != MSAALevel.Disabled && !_config.WireframeMode)
+            {
+                int MSAALevel = (int)_config.MSAA;
+                int SamplersPerPixel = MSAALevel * MSAALevel;
+
+                for (int y = 0; y < _height; ++y)
+                {
+                    for (int x = 0; x < _width; ++x)
+                    {
+                        int index = GetIndex(x, y);
+                        Color color = Color.clear;
+                        float a = 0.0f;
+                        for (int si = 0; si < MSAALevel; ++si)
+                        {
+                            for (int sj = 0; sj < MSAALevel; ++sj)
+                            {
+                                int xi = x * MSAALevel + si;
+                                int yi = y * MSAALevel + sj;
+                                int indexSamper = yi * _width * MSAALevel + xi;
+                                if (samplers_mask_MSAA[indexSamper])
+                                {
+                                    color += samplers_color_MSAA[indexSamper];
+                                    a += 1.0f;
+                                }
+                            }
+                        }
+                        if (a > 0.0f)
+                        {
+                            frameBuffer[index] = color / SamplersPerPixel;
+                        }
+                    }
+                }
+            }
             ProfilerManager.EndSample();
         }
 
@@ -487,7 +543,7 @@ namespace TinyRenderer
             int maxPY = Mathf.CeilToInt(maxY);
             maxPY = maxPY > _height ? _height : maxPY;
 
-            //if (_config.MSAA == MSAALevel.Disabled)
+            if (_config.MSAA == MSAALevel.Disabled)
             {
                 // 遍历当前三角形包围中的所有像素，判断当前像素是否在三角形中
                 // 对于在三角形中的像素，使用重心坐标插值得到深度值，并使用z buffer进行深度测试和写入
@@ -557,59 +613,59 @@ namespace TinyRenderer
                     }
                 }
             }
-            //else
-            //{
-            //    int MSAALevel = (int)_config.MSAA;
-            //    float sampler_dis = 1.0f / MSAALevel;
-            //    float sampler_dis_half = sampler_dis * 0.5f;
+            else
+            {
+                int MSAALevel = (int)_config.MSAA;
+                float sampler_dis = 1.0f / MSAALevel;
+                float sampler_dis_half = sampler_dis * 0.5f;
 
-            //    for (int y = minPY; y < maxPY; ++y)
-            //    {
-            //        for (int x = minPX; x < maxPX; ++x)
-            //        {
-            //            //检查每个子像素是否在三角形内，如果在进行重心坐标插值和深度测试
-            //            for (int si = 0; si < MSAALevel; ++si)
-            //            {
-            //                for (int sj = 0; sj < MSAALevel; ++sj)
-            //                {
-            //                    float offsetx = sampler_dis_half + si * sampler_dis;
-            //                    float offsety = sampler_dis_half + sj * sampler_dis;
-            //                    //if (IsInsideTriangle(x, y, t, offsetx, offsety))
-            //                    {
-            //                        //计算重心坐标
-            //                        var c = ComputeBarycentric2D(x + offsetx, y + offsety, t);
-            //                        float alpha = c.x;
-            //                        float beta = c.y;
-            //                        float gamma = c.z;
-            //                        if (alpha < 0 || beta < 0 || gamma < 0)
-            //                        {
-            //                            continue;
-            //                        }
-            //                        //透视校正插值，z为透视校正插值后的view space z值
-            //                        float z = 1.0f / (alpha / v[0].w + beta / v[1].w + gamma / v[2].w);
-            //                        //zp为透视校正插值后的screen space z值
-            //                        float zp = (alpha * v[0].z / v[0].w + beta * v[1].z / v[1].w + gamma * v[2].z / v[2].w) * z;
+                for (int y = minPY; y < maxPY; ++y)
+                {
+                    for (int x = minPX; x < maxPX; ++x)
+                    {
+                        //检查每个子像素是否在三角形内，如果在进行重心坐标插值和深度测试
+                        for (int si = 0; si < MSAALevel; ++si)
+                        {
+                            for (int sj = 0; sj < MSAALevel; ++sj)
+                            {
+                                float offsetx = sampler_dis_half + si * sampler_dis;
+                                float offsety = sampler_dis_half + sj * sampler_dis;
+                                //if (IsInsideTriangle(x, y, t, offsetx, offsety))
+                                {
+                                    //计算重心坐标
+                                    var c = ComputeBarycentric2D(x + offsetx, y + offsety, t);
+                                    float alpha = c.x;
+                                    float beta = c.y;
+                                    float gamma = c.z;
+                                    if (alpha < 0 || beta < 0 || gamma < 0)
+                                    {
+                                        continue;
+                                    }
+                                    //透视校正插值，z为透视校正插值后的view space z值
+                                    float z = 1.0f / (alpha / v[0].w + beta / v[1].w + gamma / v[2].w);
+                                    //zp为透视校正插值后的screen space z值
+                                    float zp = (alpha * v[0].z / v[0].w + beta * v[1].z / v[1].w + gamma * v[2].z / v[2].w) * z;
 
-            //                        //深度测试(注意我们这儿的z值越大越靠近near plane，因此大值通过测试）                                    
-            //                        int xi = x * MSAALevel + si;
-            //                        int yi = y * MSAALevel + sj;
-            //                        int index = yi * _width * MSAALevel + xi;
-            //                        if (zp > samplers_depth_MSAA[index])
-            //                        {
-            //                            samplers_depth_MSAA[index] = zp;
-            //                            samplers_mask_MSAA[index] = true;
+                                    //深度测试(注意我们这儿的z值越大越靠近near plane，因此大值通过测试）                                    
+                                    int xi = x * MSAALevel + si;
+                                    int yi = y * MSAALevel + sj;
+                                    int index = yi * _width * MSAALevel + xi;
+                                    if (zp > samplers_depth_MSAA[index])
+                                    {
+                                        samplers_depth_MSAA[index] = zp;
+                                        samplers_mask_MSAA[index] = true;
 
-            //                            //透视校正插值
-            //                            Color color_p = (alpha * t.Vertex0.Color / v[0].w + beta * t.Vertex1.Color / v[1].w + gamma * t.Vertex2.Color / v[2].w) * z;
-            //                            samplers_color_MSAA[index] = color_p;
-            //                        }
-            //                    }
-            //                }
-            //            }
+                                        //透视校正插值
+                                        Color color_p = (alpha * t.Vertex0.Color / v[0].w + beta * t.Vertex1.Color / v[1].w + gamma * t.Vertex2.Color / v[2].w) * z;
+                                        samplers_color_MSAA[index] = color_p;
+                                    }
+                                }
+                            }
+                        }
 
-            //        }
-            //    }
-            //}
+                    }
+                }
+            }
 
             ProfilerManager.EndSample();
         }

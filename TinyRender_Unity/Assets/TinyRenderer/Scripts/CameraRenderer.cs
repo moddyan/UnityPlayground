@@ -96,7 +96,6 @@ namespace TinyRenderer
             Debug.Log($"Found rendering objects: {_renderObjects.Count}");
 
             RectTransform rect = rawImage.rectTransform;
-            rect.sizeDelta = new Vector2(Screen.width, Screen.height);
             int w = Mathf.FloorToInt(rect.rect.width);
             int h = Mathf.FloorToInt(rect.rect.height);
             Debug.Log($"screen size: {w}x{h}");
