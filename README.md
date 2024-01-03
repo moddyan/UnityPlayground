@@ -1,4 +1,4 @@
-## Coding for Fun, Stick like a Dog
+## Coding for Fun
 
 
 ### TinyRender_Unity
